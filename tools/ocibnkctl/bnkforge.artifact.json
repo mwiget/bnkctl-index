@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.3.1.2",
+  "version": "2.3.1.3",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-1) — deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
+  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-1) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
-    "digest": "sha256:5c939543b7da843ca6c87e675e4d9403a10633d2a328d499995bf76ebd8c863b"
+    "digest": "sha256:7436482ecc98455169c557e9dfda4d4b9980429142a107734e54c94b65017613"
   },
   "lifecycle": {
     "supports_apply": true,
@@ -30,7 +30,12 @@
     "init": [
       {
         "name": "init-poc",
-        "args": ["ocibnkctl", "init", "{{inputs.poc_name}}", "--no-git"],
+        "args": [
+          "ocibnkctl",
+          "init",
+          "{{inputs.poc_name}}",
+          "--no-git"
+        ],
         "env": {
           "OCIBNKCTL_CUSTOMER": "{{inputs.customer}}",
           "OCIBNKCTL_PROVIDER": "{{inputs.provider}}",
@@ -46,7 +51,12 @@
     "apply": [
       {
         "name": "validate",
-        "args": ["ocibnkctl", "validate", "--poc", "/state/{{inputs.poc_name}}"],
+        "args": [
+          "ocibnkctl",
+          "validate",
+          "--poc",
+          "/state/{{inputs.poc_name}}"
+        ],
         "timeout_seconds": 300
       },
       {
@@ -61,7 +71,10 @@
           "{{inputs.poc_name}}"
         ],
         "timeout_seconds": 5400,
-        "retry": { "max_attempts": 2, "backoff_seconds": 120 }
+        "retry": {
+          "max_attempts": 2,
+          "backoff_seconds": 120
+        }
       }
     ],
     "destroy": [
@@ -87,7 +100,7 @@
         "type": "string",
         "source": "user",
         "default": "poc",
-        "description": "PoC/cluster name ([a-z0-9-]). Also names the k3s node containers — give parallel PoCs on one host distinct names."
+        "description": "PoC/cluster name ([a-z0-9-]). Also names the k3s node containers \u2014 give parallel PoCs on one host distinct names."
       }
     ],
     "optional": [
