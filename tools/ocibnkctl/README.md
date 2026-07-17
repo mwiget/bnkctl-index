@@ -34,7 +34,7 @@ v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
    - TEEM JWT → `/state/<poc_name>/keys/.jwt`
    Run the module's `init` first (creates `/state/poc`), drop the files into the module's state volume, then deploy.
 2. **Host resource floor**: ~10 cores for the full stack (`e2e` auto-runs `deploy shrink` on tighter hosts; a 4-core `host_profile: small` exists — see the upstream README).
-3. **Docker socket proxy** with container create/exec capabilities enabled (BNK Forge server installs ship `bnk-forge-docker-socket-proxy`).
+3. **The WIDE docker socket proxy** (`docker-socket-proxy-infra`, guide §14.6): ocibnkctl builds a k3s cluster out of containers, so it needs the Docker networks/volumes/exec APIs the default narrow proxy denies. Enable it on the BNK Forge host with `COMPOSE_PROFILES=docker-infra make deploy`. Without it, `cluster up` fails at the first `docker network create` with a 403 from the proxy.
 
 ## Status
 
