@@ -1,24 +1,23 @@
 {
   "schema_version": 1,
   "name": "roksbnkctl-tools-runner",
-  "version": "1.11.4",
+  "version": "1.20.0",
   "kind": "container_image",
-  "description": "F5 roksbnkctl tools runner — provisions a ROKS/IKS cluster and brings up the BNK stack from a single self-contained image. Procedural steps invoke the artifact's own image via argv only (no shell, no command-string, no image override).",
+  "description": "F5 roksbnkctl tools runner — provisions a ROKS/IKS cluster and brings up the BNK stack from a single self-contained image. Workspace config is built non-interactively from ROKSBNKCTL_* env vars; procedural steps invoke the artifact's own image via argv only (no shell, no command-string, no image override).",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "jgruberf5/roksbnkctl-tools-runner",
-    "digest": "sha256:a9b858b4c3c5afbd124625226451eaa66cdff3d2840b3a76c4f24c1e0fad259d"
+    "digest": "sha256:8db5a22ff9eeb0f66f06c6f62c5c5e98437e6b769e8ebea5036a1cd1be0867fc"
   },
   "lifecycle": {
     "supports_apply": true,
-    "supports_destroy": false
+    "supports_destroy": true
   },
   "credentials": {
     "cloud": "ibmcloud"
   },
   "state": {
     "mount_path": "/state",
-    "outputs_file": "outputs.json",
     "home_env": {
       "ROKSBNKCTL_HOME": "/state"
     }
@@ -34,7 +33,14 @@
     "init": [
       {
         "name": "init",
-        "args": ["roksbnkctl", "init", "--home", "/state"],
+        "args": ["roksbnkctl", "init", "--non-interactive"],
+        "env": {
+          "ROKSBNKCTL_REGION": "{{inputs.region}}",
+          "ROKSBNKCTL_RESOURCE_GROUP": "{{inputs.resource_group}}",
+          "ROKSBNKCTL_PREFIX": "{{inputs.prefix}}",
+          "ROKSBNKCTL_CLUSTER_NAME": "{{inputs.cluster_name}}",
+          "ROKSBNKCTL_CLUSTER_CREATE": "{{inputs.provision_cluster}}"
+        },
         "timeout_seconds": 600,
         "run_once": true
       }
@@ -43,34 +49,23 @@
       {
         "name": "cluster-up",
         "when": "{{inputs.provision_cluster}}",
-        "args": [
-          "roksbnkctl",
-          "cluster",
-          "up",
-          "--home",
-          "/state",
-          "--region",
-          "{{inputs.region}}",
-          "--cluster-name",
-          "{{inputs.cluster_name}}"
-        ],
+        "args": ["roksbnkctl", "cluster", "up", "--auto"],
         "timeout_seconds": 3600,
         "retry": { "max_attempts": 3, "backoff_seconds": 300 }
       },
       {
         "name": "bnk-up",
         "when": "{{inputs.deploy_bnk}}",
-        "args": [
-          "roksbnkctl",
-          "bnk",
-          "up",
-          "--home",
-          "/state",
-          "--outputs",
-          "/state/outputs.json"
-        ],
+        "args": ["roksbnkctl", "bnk", "up", "--auto"],
         "timeout_seconds": 3600,
         "retry": { "max_attempts": 2, "backoff_seconds": 300 }
+      }
+    ],
+    "destroy": [
+      {
+        "name": "down",
+        "args": ["roksbnkctl", "down", "--auto"],
+        "timeout_seconds": 3600
       }
     ]
   },
@@ -83,10 +78,23 @@
         "description": "IBM Cloud region for the ROKS/IKS cluster (e.g. us-south)."
       },
       {
+        "name": "resource_group",
+        "type": "string",
+        "source": "user",
+        "default": "default",
+        "description": "IBM Cloud resource group the workspace resources are created in."
+      },
+      {
+        "name": "prefix",
+        "type": "string",
+        "source": "user",
+        "description": "Resource-name prefix for everything this workspace creates (e.g. acme-eu)."
+      },
+      {
         "name": "cluster_name",
         "type": "string",
         "source": "user",
-        "description": "Name of the ROKS/IKS cluster to create or target."
+        "description": "New cluster name, or an existing cluster name/ID when not provisioning."
       }
     ],
     "optional": [
@@ -95,14 +103,14 @@
         "type": "boolean",
         "source": "user",
         "default": true,
-        "description": "Gate for the 'cluster up' step. When false, an existing cluster is reused."
+        "description": "true = provision a new ROKS cluster (gates the 'cluster up' step); false = attach to an existing one."
       },
       {
         "name": "deploy_bnk",
         "type": "boolean",
         "source": "user",
         "default": true,
-        "description": "Gate for the 'bnk up' step. When false, only the cluster is provisioned."
+        "description": "Gate for the 'bnk up' step. When false, only the cluster phase runs."
       }
     ]
   },

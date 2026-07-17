@@ -2,15 +2,20 @@
   "schema_version": 1,
   "blueprint": {
     "id": "roks-bnk-demo",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "name": "BNK on IBM Cloud ROKS (roksbnkctl)",
-    "description": "Provision a ROKS/IKS cluster on IBM Cloud and deploy F5 BIG-IP Next for Kubernetes using the roksbnkctl tools-runner container. Everything runs inside a digest-pinned image — no host tooling required."
+    "description": "Provision a ROKS/IKS cluster on IBM Cloud and deploy F5 BIG-IP Next for Kubernetes using the roksbnkctl tools-runner container. Everything runs inside a digest-pinned image \u2014 no host tooling required."
   },
   "category": "bnk",
   "cloud_provider": "ibm",
-  "tags": ["bnk", "roks", "ibm-cloud", "bnkctl"],
+  "tags": [
+    "bnk",
+    "roks",
+    "ibm-cloud",
+    "bnkctl"
+  ],
   "outcomes": [
-    "A ROKS/IKS cluster provisioned in the selected IBM Cloud region (optional — an existing cluster can be reused)",
+    "A ROKS/IKS cluster provisioned in the selected IBM Cloud region (optional \u2014 an existing cluster can be reused)",
     "F5 BIG-IP Next for Kubernetes installed and running on the cluster",
     "Deployment outputs captured in the module state for follow-on modules"
   ],
@@ -30,12 +35,14 @@
     {
       "id": "roksbnkctl",
       "module": "tools/roksbnkctl",
-      "version": "1.11.4",
+      "version": "1.20.0",
       "name": "roksbnkctl tools runner",
-      "description": "Runs roksbnkctl cluster up and bnk up inside the pinned tools-runner image.",
+      "description": "Runs roksbnkctl init/cluster up/bnk up (v1.20.0, non-interactive env-driven workspace) inside the pinned tools-runner image; destroy runs roksbnkctl down.",
       "depends_on": [],
       "inputs": {
         "region": "${region}",
+        "resource_group": "${resource_group}",
+        "prefix": "${prefix}",
         "cluster_name": "${cluster_name}",
         "provision_cluster": "${provision_cluster}",
         "deploy_bnk": "${deploy_bnk}"
@@ -49,6 +56,19 @@
         "type": "string",
         "label": "IBM Cloud region",
         "description": "IBM Cloud region for the ROKS/IKS cluster (e.g. us-south)."
+      },
+      {
+        "name": "resource_group",
+        "type": "string",
+        "label": "Resource group",
+        "default": "default",
+        "description": "IBM Cloud resource group the workspace resources are created in."
+      },
+      {
+        "name": "prefix",
+        "type": "string",
+        "label": "Resource prefix",
+        "description": "Resource-name prefix for everything this workspace creates (e.g. acme-eu)."
       },
       {
         "name": "cluster_name",

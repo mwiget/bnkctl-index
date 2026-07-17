@@ -3,7 +3,7 @@
   "module": {
     "name": "roksbnkctl",
     "path": "tools/roksbnkctl",
-    "version": "1.11.4",
+    "version": "1.20.0",
     "category": "bnk",
     "description": "roksbnkctl — deploy F5 BIG-IP Next for Kubernetes on IBM Cloud ROKS/IKS. Runs inside the digest-pinned roksbnkctl-tools-runner container image; no host tooling required."
   },
@@ -15,7 +15,7 @@
       "supports_init": true,
       "supports_plan": false,
       "supports_apply": true,
-      "supports_destroy": false,
+      "supports_destroy": true,
       "supports_refresh": false,
       "supports_drift": false
     },
@@ -34,10 +34,23 @@
         "description": "IBM Cloud region for the ROKS/IKS cluster (e.g. us-south)."
       },
       {
+        "name": "resource_group",
+        "type": "string",
+        "source": "user",
+        "default": "default",
+        "description": "IBM Cloud resource group the workspace resources are created in."
+      },
+      {
+        "name": "prefix",
+        "type": "string",
+        "source": "user",
+        "description": "Resource-name prefix for everything this workspace creates (e.g. acme-eu)."
+      },
+      {
         "name": "cluster_name",
         "type": "string",
         "source": "user",
-        "description": "Name of the ROKS/IKS cluster to create or target."
+        "description": "New cluster name, or an existing cluster name/ID when not provisioning."
       }
     ],
     "optional": [
@@ -46,14 +59,14 @@
         "type": "boolean",
         "source": "user",
         "default": true,
-        "description": "Gate for the 'cluster up' step. When false, an existing cluster is reused."
+        "description": "true = provision a new ROKS cluster (gates the 'cluster up' step); false = attach to an existing one."
       },
       {
         "name": "deploy_bnk",
         "type": "boolean",
         "source": "user",
         "default": true,
-        "description": "Gate for the 'bnk up' step. When false, only the cluster is provisioned."
+        "description": "Gate for the 'bnk up' step. When false, only the cluster phase runs."
       }
     ]
   },
