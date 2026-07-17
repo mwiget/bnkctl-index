@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.3.1",
+  "version": "2.3.1.1",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner — deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. Argv-only steps; no shell.",
+  "description": "ocibnkctl tools runner \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. Argv-only steps; no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
@@ -30,7 +30,13 @@
     "init": [
       {
         "name": "init-poc",
-        "args": ["ocibnkctl", "init", "poc", "--customer", "{{inputs.customer}}"],
+        "args": [
+          "ocibnkctl",
+          "init",
+          "poc",
+          "--customer",
+          "{{inputs.customer}}"
+        ],
         "timeout_seconds": 300,
         "run_once": true
       }
@@ -38,7 +44,12 @@
     "apply": [
       {
         "name": "validate",
-        "args": ["ocibnkctl", "validate", "--poc", "/state/poc"],
+        "args": [
+          "ocibnkctl",
+          "validate",
+          "--poc",
+          "/state/poc"
+        ],
         "timeout_seconds": 300
       },
       {
@@ -53,7 +64,10 @@
           "poc"
         ],
         "timeout_seconds": 5400,
-        "retry": { "max_attempts": 2, "backoff_seconds": 120 }
+        "retry": {
+          "max_attempts": 2,
+          "backoff_seconds": 120
+        }
       }
     ],
     "destroy": [

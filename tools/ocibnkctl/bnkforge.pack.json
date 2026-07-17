@@ -3,9 +3,10 @@
   "module": {
     "name": "ocibnkctl",
     "path": "tools/ocibnkctl",
-    "version": "2.3.1",
+    "version": "2.3.1.1",
     "category": "bnk",
-    "description": "ocibnkctl — deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). Runs inside the digest-pinned ocibnkctl-tools-runner image via the docker-socket proxy."
+    "description": "ocibnkctl \u2014 deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). Runs inside the digest-pinned ocibnkctl-tools-runner image via the docker-socket proxy.",
+    "provider": "docker"
   },
   "deployment_pack": {
     "engine": "container",

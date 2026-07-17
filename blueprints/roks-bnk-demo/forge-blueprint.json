@@ -2,7 +2,7 @@
   "schema_version": 1,
   "blueprint": {
     "id": "roks-bnk-demo",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "name": "BNK on IBM Cloud ROKS (roksbnkctl)",
     "description": "Provision a ROKS/IKS cluster on IBM Cloud and deploy F5 BIG-IP Next for Kubernetes using the roksbnkctl tools-runner container. Everything runs inside a digest-pinned image \u2014 no host tooling required."
   },
@@ -35,7 +35,7 @@
     {
       "id": "roksbnkctl",
       "module": "tools/roksbnkctl",
-      "version": "1.20.0",
+      "version": "1.20.0.1",
       "name": "roksbnkctl tools runner",
       "description": "Runs roksbnkctl init/cluster up/bnk up (v1.20.0, non-interactive env-driven workspace) inside the pinned tools-runner image; destroy runs roksbnkctl down.",
       "depends_on": [],

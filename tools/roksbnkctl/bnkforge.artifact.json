@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "name": "roksbnkctl-tools-runner",
-  "version": "1.20.0",
+  "version": "1.20.0.1",
   "kind": "container_image",
-  "description": "F5 roksbnkctl tools runner — provisions a ROKS/IKS cluster and brings up the BNK stack from a single self-contained image. Workspace config is built non-interactively from ROKSBNKCTL_* env vars; procedural steps invoke the artifact's own image via argv only (no shell, no command-string, no image override).",
+  "description": "F5 roksbnkctl tools runner \u2014 provisions a ROKS/IKS cluster and brings up the BNK stack from a single self-contained image. Workspace config is built non-interactively from ROKSBNKCTL_* env vars; procedural steps invoke the artifact's own image via argv only (no shell, no command-string, no image override).",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "jgruberf5/roksbnkctl-tools-runner",
@@ -33,7 +33,11 @@
     "init": [
       {
         "name": "init",
-        "args": ["roksbnkctl", "init", "--non-interactive"],
+        "args": [
+          "roksbnkctl",
+          "init",
+          "--non-interactive"
+        ],
         "env": {
           "ROKSBNKCTL_REGION": "{{inputs.region}}",
           "ROKSBNKCTL_RESOURCE_GROUP": "{{inputs.resource_group}}",
@@ -49,22 +53,42 @@
       {
         "name": "cluster-up",
         "when": "{{inputs.provision_cluster}}",
-        "args": ["roksbnkctl", "cluster", "up", "--auto"],
+        "args": [
+          "roksbnkctl",
+          "cluster",
+          "up",
+          "--auto"
+        ],
         "timeout_seconds": 3600,
-        "retry": { "max_attempts": 3, "backoff_seconds": 300 }
+        "retry": {
+          "max_attempts": 3,
+          "backoff_seconds": 300
+        }
       },
       {
         "name": "bnk-up",
         "when": "{{inputs.deploy_bnk}}",
-        "args": ["roksbnkctl", "bnk", "up", "--auto"],
+        "args": [
+          "roksbnkctl",
+          "bnk",
+          "up",
+          "--auto"
+        ],
         "timeout_seconds": 3600,
-        "retry": { "max_attempts": 2, "backoff_seconds": 300 }
+        "retry": {
+          "max_attempts": 2,
+          "backoff_seconds": 300
+        }
       }
     ],
     "destroy": [
       {
         "name": "down",
-        "args": ["roksbnkctl", "down", "--auto"],
+        "args": [
+          "roksbnkctl",
+          "down",
+          "--auto"
+        ],
         "timeout_seconds": 3600
       }
     ]

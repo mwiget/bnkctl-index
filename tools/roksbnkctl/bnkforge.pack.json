@@ -3,9 +3,10 @@
   "module": {
     "name": "roksbnkctl",
     "path": "tools/roksbnkctl",
-    "version": "1.20.0",
+    "version": "1.20.0.1",
     "category": "bnk",
-    "description": "roksbnkctl — deploy F5 BIG-IP Next for Kubernetes on IBM Cloud ROKS/IKS. Runs inside the digest-pinned roksbnkctl-tools-runner container image; no host tooling required."
+    "description": "roksbnkctl \u2014 deploy F5 BIG-IP Next for Kubernetes on IBM Cloud ROKS/IKS. Runs inside the digest-pinned roksbnkctl-tools-runner container image; no host tooling required.",
+    "provider": "ibm"
   },
   "deployment_pack": {
     "engine": "container",
