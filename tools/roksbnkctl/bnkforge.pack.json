@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "module": {
+    "name": "roksbnkctl",
+    "path": "tools/roksbnkctl",
+    "version": "1.11.4",
+    "category": "bnk",
+    "description": "roksbnkctl — deploy F5 BIG-IP Next for Kubernetes on IBM Cloud ROKS/IKS. Runs inside the digest-pinned roksbnkctl-tools-runner container image; no host tooling required."
+  },
+  "deployment_pack": {
+    "engine": "container",
+    "runner_profile": "container-default",
+    "working_directory": ".",
+    "lifecycle": {
+      "supports_init": true,
+      "supports_plan": false,
+      "supports_apply": true,
+      "supports_destroy": false,
+      "supports_refresh": false,
+      "supports_drift": false
+    },
+    "entrypoints": {}
+  },
+  "dependencies": {
+    "required": [],
+    "optional": []
+  },
+  "inputs": {
+    "required": [
+      {
+        "name": "region",
+        "type": "string",
+        "source": "user",
+        "description": "IBM Cloud region for the ROKS/IKS cluster (e.g. us-south)."
+      },
+      {
+        "name": "cluster_name",
+        "type": "string",
+        "source": "user",
+        "description": "Name of the ROKS/IKS cluster to create or target."
+      }
+    ],
+    "optional": [
+      {
+        "name": "provision_cluster",
+        "type": "boolean",
+        "source": "user",
+        "default": true,
+        "description": "Gate for the 'cluster up' step. When false, an existing cluster is reused."
+      },
+      {
+        "name": "deploy_bnk",
+        "type": "boolean",
+        "source": "user",
+        "default": true,
+        "description": "Gate for the 'bnk up' step. When false, only the cluster is provisioned."
+      }
+    ]
+  },
+  "outputs": {
+    "key_outputs": []
+  }
+}

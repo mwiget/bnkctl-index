@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "blueprint": {
+    "id": "roks-bnk-demo",
+    "version": "1.0.0",
+    "name": "BNK on IBM Cloud ROKS (roksbnkctl)",
+    "description": "Provision a ROKS/IKS cluster on IBM Cloud and deploy F5 BIG-IP Next for Kubernetes using the roksbnkctl tools-runner container. Everything runs inside a digest-pinned image — no host tooling required."
+  },
+  "category": "bnk",
+  "cloud_provider": "ibm",
+  "tags": ["bnk", "roks", "ibm-cloud", "bnkctl"],
+  "outcomes": [
+    "A ROKS/IKS cluster provisioned in the selected IBM Cloud region (optional — an existing cluster can be reused)",
+    "F5 BIG-IP Next for Kubernetes installed and running on the cluster",
+    "Deployment outputs captured in the module state for follow-on modules"
+  ],
+  "prerequisites": [
+    {
+      "type": "credential",
+      "name": "IBM Cloud API key",
+      "description": "IBM Cloud API key available as an ibmcloud credential in BNK Forge."
+    },
+    {
+      "type": "entitlement",
+      "name": "BNK entitlement",
+      "description": "BNK entitlement (FAR archive / subscription JWT) per the roksbnkctl documentation."
+    }
+  ],
+  "modules": [
+    {
+      "id": "roksbnkctl",
+      "module": "tools/roksbnkctl",
+      "version": "1.11.4",
+      "name": "roksbnkctl tools runner",
+      "description": "Runs roksbnkctl cluster up and bnk up inside the pinned tools-runner image.",
+      "depends_on": [],
+      "inputs": {
+        "region": "${region}",
+        "cluster_name": "${cluster_name}",
+        "provision_cluster": "${provision_cluster}",
+        "deploy_bnk": "${deploy_bnk}"
+      }
+    }
+  ],
+  "inputs": {
+    "required": [
+      {
+        "name": "region",
+        "type": "string",
+        "label": "IBM Cloud region",
+        "description": "IBM Cloud region for the ROKS/IKS cluster (e.g. us-south)."
+      },
+      {
+        "name": "cluster_name",
+        "type": "string",
+        "label": "Cluster name",
+        "description": "Name of the ROKS/IKS cluster to create or target."
+      }
+    ],
+    "optional": [
+      {
+        "name": "provision_cluster",
+        "type": "boolean",
+        "label": "Provision cluster",
+        "default": true,
+        "description": "When false, an existing cluster is reused instead of provisioning a new one."
+      },
+      {
+        "name": "deploy_bnk",
+        "type": "boolean",
+        "label": "Deploy BNK",
+        "default": true,
+        "description": "When false, only the cluster is provisioned."
+      }
+    ]
+  }
+}
