@@ -2,7 +2,7 @@
   "schema_version": 1,
   "blueprint": {
     "id": "k3s-bnk-demo",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "name": "BNK demo on native k3s (ocibnkctl)",
     "description": "Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster running as containers on the host docker/podman runtime \u2014 no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
   },
@@ -44,11 +44,17 @@
     {
       "id": "ocibnkctl",
       "module": "tools/ocibnkctl",
-      "version": "2.3.1.1",
+      "version": "2.3.1.2",
       "name": "ocibnkctl tools runner",
       "description": "Runs ocibnkctl init/validate/e2e inside the pinned tools-runner image; k3s nodes launch as sibling containers via the docker-socket proxy.",
       "depends_on": [],
       "inputs": {
+        "poc_name": "${poc_name}",
+        "provider": "${provider}",
+        "tmm_nodes": "${tmm_nodes}",
+        "edge_octet": "${edge_octet}",
+        "host_profile": "${host_profile}",
+        "teems_relay": "${teems_relay}",
         "customer": "${customer}"
       }
     }
@@ -56,13 +62,84 @@
   "inputs": {
     "required": [
       {
+        "name": "poc_name",
+        "type": "string",
+        "label": "PoC / cluster name",
+        "default": "poc",
+        "order": 1,
+        "description": "Names the PoC repo, the k3s cluster and its node containers. Give parallel PoCs on one host distinct names."
+      }
+    ],
+    "optional": [
+      {
+        "name": "provider",
+        "type": "string",
+        "label": "Container runtime",
+        "default": "docker",
+        "order": 2,
+        "description": "Host runtime the k3s nodes run as containers on.",
+        "options": [
+          {
+            "label": "Docker",
+            "value": "docker"
+          },
+          {
+            "label": "Podman",
+            "value": "podman"
+          }
+        ]
+      },
+      {
+        "name": "tmm_nodes",
+        "type": "number",
+        "label": "TMM nodes",
+        "default": 1,
+        "order": 3,
+        "description": "Worker nodes dedicated to TMM \u2014 one active TMM pod each. Each TMM serves traffic landing on its own node (no cross-node fan-out in demo mode)."
+      },
+      {
+        "name": "edge_octet",
+        "type": "number",
+        "label": "Edge network octet",
+        "default": 99,
+        "order": 4,
+        "description": "3rd octet of this PoC's bnk-edge network (192.168.<n>.0/24). Must be distinct per cluster or parallel PoCs collide on the same docker subnet."
+      },
+      {
+        "name": "host_profile",
+        "type": "string",
+        "label": "Host profile",
+        "default": "",
+        "order": 5,
+        "description": "Leave unset for auto-detect (picks 'small' below the 10-core floor, shedding TMM's metrics sidecar). Choose explicitly only to override that.",
+        "options": [
+          {
+            "label": "Standard \u2014 full footprint",
+            "value": "standard"
+          },
+          {
+            "label": "Small \u2014 tight host (<10 cores)",
+            "value": "small"
+          }
+        ]
+      },
+      {
+        "name": "teems_relay",
+        "type": "boolean",
+        "label": "TEEMS egress relay",
+        "default": false,
+        "order": 6,
+        "description": "Enable only on hosts where forwarded pod egress is lossy and licensing (TEEMS) fails as a result."
+      },
+      {
         "name": "customer",
         "type": "string",
         "label": "Customer name",
-        "description": "Recorded in the PoC repo created by ocibnkctl init."
+        "default": "",
+        "order": 7,
+        "description": "Optional label recorded in the PoC repo's poc.yaml metadata. Cosmetic."
       }
-    ],
-    "optional": []
+    ]
   },
   "cloud_provider": "docker"
 }

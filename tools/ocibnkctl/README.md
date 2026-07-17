@@ -1,6 +1,6 @@
 # ocibnkctl — BNK on native k3s (host container runtime)
 
-Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl), which deploys F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
+Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.3.1-1**, which deploys F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
 
 ## How it runs under BNK Forge
 
@@ -8,21 +8,30 @@ The runner image carries `ocibnkctl` plus the tools it requires (`docker` CLI, `
 
 ## Lifecycle
 
-- `init` (run once): `ocibnkctl init poc --customer <customer>` — creates the PoC repo at `/state/poc`
-- `apply`: `ocibnkctl validate` then `ocibnkctl e2e --yolo --confirm-cluster poc` (cluster up → prereqs → FLO → shrink-if-tight → CNE; idempotent and resume-safe)
-- `destroy`: `ocibnkctl destroy --yolo --confirm-cluster poc`
+- `init` (run once): `ocibnkctl init <poc_name> --no-git` with the form inputs passed as `OCIBNKCTL_*` env — creates the PoC repo at `/state/<poc_name>` with the chosen shape baked into `poc.yaml`
+- `apply`: `ocibnkctl validate` then `ocibnkctl e2e --yolo --confirm-cluster <poc_name>` (cluster up → prereqs → FLO → shrink-if-tight → CNE; idempotent and resume-safe)
+- `destroy`: `ocibnkctl destroy --yolo --confirm-cluster <poc_name>`
 
 ## Inputs
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `customer` | string | yes | Customer name recorded in the PoC repo |
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `poc_name` | string | `poc` | PoC/cluster name — also names the k3s node containers. **Distinct per parallel PoC on one host.** |
+| `provider` | docker \| podman | `docker` | Host container runtime the k3s nodes run on |
+| `tmm_nodes` | number | `1` | Worker nodes dedicated to TMM (one active TMM pod each) |
+| `edge_octet` | number | `99` | 3rd octet of the bnk-edge network (192.168.\<n\>.0/24) — **distinct per cluster** or parallel PoCs collide on the same docker subnet |
+| `host_profile` | standard \| small | *(unset = auto)* | Auto-detect picks `small` below the 10-core floor (sheds TMM's metrics sidecar) |
+| `teems_relay` | boolean | `false` | Host-side TEEMS egress relay for hosts with lossy forwarded egress |
+| `customer` | string | — | Optional label recorded in poc.yaml metadata (cosmetic) |
+
+Inputs are seeded into `poc.yaml` via `OCIBNKCTL_*` env at `init` (ocibnkctl
+v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
 
 ## Prerequisites — read before deploying
 
 1. **F5 entitlement files must be placed in the module state before `apply`** (delivered through F5's normal channels; there is no env/flag injection for these):
-   - FAR tarball → `/state/poc/keys/` (image-pull credentials for `repo.f5.com`)
-   - TEEM JWT → `/state/poc/keys/.jwt`
+   - FAR tarball → `/state/<poc_name>/keys/` (image-pull credentials for `repo.f5.com`)
+   - TEEM JWT → `/state/<poc_name>/keys/.jwt`
    Run the module's `init` first (creates `/state/poc`), drop the files into the module's state volume, then deploy.
 2. **Host resource floor**: ~10 cores for the full stack (`e2e` auto-runs `deploy shrink` on tighter hosts; a 4-core `host_profile: small` exists — see the upstream README).
 3. **Docker socket proxy** with container create/exec capabilities enabled (BNK Forge server installs ship `bnk-forge-docker-socket-proxy`).

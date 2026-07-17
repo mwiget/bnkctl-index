@@ -3,9 +3,9 @@
   "module": {
     "name": "ocibnkctl",
     "path": "tools/ocibnkctl",
-    "version": "2.3.1.1",
+    "version": "2.3.1.2",
     "category": "bnk",
-    "description": "ocibnkctl \u2014 deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). Runs inside the digest-pinned ocibnkctl-tools-runner image via the docker-socket proxy.",
+    "description": "ocibnkctl (v2.3.1-1) \u2014 deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). PoC shape (runtime, TMM nodes, edge octet, host profile) is chosen at deploy time and seeded into poc.yaml.",
     "provider": "docker"
   },
   "deployment_pack": {
@@ -29,13 +29,57 @@
   "inputs": {
     "required": [
       {
+        "name": "poc_name",
+        "type": "string",
+        "source": "user",
+        "default": "poc",
+        "description": "PoC/cluster name ([a-z0-9-]); also names the k3s node containers."
+      }
+    ],
+    "optional": [
+      {
+        "name": "provider",
+        "type": "string",
+        "source": "user",
+        "default": "docker",
+        "description": "Host container runtime: docker or podman."
+      },
+      {
+        "name": "tmm_nodes",
+        "type": "number",
+        "source": "user",
+        "default": 1,
+        "description": "Worker nodes dedicated to TMM."
+      },
+      {
+        "name": "edge_octet",
+        "type": "number",
+        "source": "user",
+        "default": 99,
+        "description": "3rd octet of the bnk-edge network (192.168.<n>.0/24)."
+      },
+      {
+        "name": "host_profile",
+        "type": "string",
+        "source": "user",
+        "default": "",
+        "description": "Blank = auto-detect; standard or small."
+      },
+      {
+        "name": "teems_relay",
+        "type": "boolean",
+        "source": "user",
+        "default": false,
+        "description": "Host-side TEEMS egress relay."
+      },
+      {
         "name": "customer",
         "type": "string",
         "source": "user",
-        "description": "Customer name recorded in the PoC repo created by ocibnkctl init."
+        "default": "",
+        "description": "Optional label recorded in poc.yaml metadata."
       }
-    ],
-    "optional": []
+    ]
   },
   "outputs": {
     "key_outputs": []

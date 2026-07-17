@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.3.1.1",
+  "version": "2.3.1.2",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. Argv-only steps; no shell.",
+  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-1) — deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
-    "digest": "sha256:9dacbd3f24d32ca4c98a94c5ede1b0c4d48b1b07e020b2b8c82fe365dcd998bb"
+    "digest": "sha256:5c939543b7da843ca6c87e675e4d9403a10633d2a328d499995bf76ebd8c863b"
   },
   "lifecycle": {
     "supports_apply": true,
@@ -30,13 +30,15 @@
     "init": [
       {
         "name": "init-poc",
-        "args": [
-          "ocibnkctl",
-          "init",
-          "poc",
-          "--customer",
-          "{{inputs.customer}}"
-        ],
+        "args": ["ocibnkctl", "init", "{{inputs.poc_name}}", "--no-git"],
+        "env": {
+          "OCIBNKCTL_CUSTOMER": "{{inputs.customer}}",
+          "OCIBNKCTL_PROVIDER": "{{inputs.provider}}",
+          "OCIBNKCTL_TMM_NODES": "{{inputs.tmm_nodes}}",
+          "OCIBNKCTL_EDGE_OCTET": "{{inputs.edge_octet}}",
+          "OCIBNKCTL_HOST_PROFILE": "{{inputs.host_profile}}",
+          "OCIBNKCTL_TEEMS_RELAY": "{{inputs.teems_relay}}"
+        },
         "timeout_seconds": 300,
         "run_once": true
       }
@@ -44,12 +46,7 @@
     "apply": [
       {
         "name": "validate",
-        "args": [
-          "ocibnkctl",
-          "validate",
-          "--poc",
-          "/state/poc"
-        ],
+        "args": ["ocibnkctl", "validate", "--poc", "/state/{{inputs.poc_name}}"],
         "timeout_seconds": 300
       },
       {
@@ -58,16 +55,13 @@
           "ocibnkctl",
           "e2e",
           "--poc",
-          "/state/poc",
+          "/state/{{inputs.poc_name}}",
           "--yolo",
           "--confirm-cluster",
-          "poc"
+          "{{inputs.poc_name}}"
         ],
         "timeout_seconds": 5400,
-        "retry": {
-          "max_attempts": 2,
-          "backoff_seconds": 120
-        }
+        "retry": { "max_attempts": 2, "backoff_seconds": 120 }
       }
     ],
     "destroy": [
@@ -77,10 +71,10 @@
           "ocibnkctl",
           "destroy",
           "--poc",
-          "/state/poc",
+          "/state/{{inputs.poc_name}}",
           "--yolo",
           "--confirm-cluster",
-          "poc"
+          "{{inputs.poc_name}}"
         ],
         "timeout_seconds": 1800
       }
@@ -89,13 +83,57 @@
   "inputs": {
     "required": [
       {
+        "name": "poc_name",
+        "type": "string",
+        "source": "user",
+        "default": "poc",
+        "description": "PoC/cluster name ([a-z0-9-]). Also names the k3s node containers — give parallel PoCs on one host distinct names."
+      }
+    ],
+    "optional": [
+      {
+        "name": "provider",
+        "type": "string",
+        "source": "user",
+        "default": "docker",
+        "description": "Host container runtime the k3s nodes run on."
+      },
+      {
+        "name": "tmm_nodes",
+        "type": "number",
+        "source": "user",
+        "default": 1,
+        "description": "Worker nodes dedicated to TMM (one active TMM pod each)."
+      },
+      {
+        "name": "edge_octet",
+        "type": "number",
+        "source": "user",
+        "default": 99,
+        "description": "3rd octet of the bnk-edge network (192.168.<n>.0/24). Distinct per parallel cluster."
+      },
+      {
+        "name": "host_profile",
+        "type": "string",
+        "source": "user",
+        "default": "",
+        "description": "Blank = auto-detect from host cores; 'small' sheds TMM's metrics sidecar."
+      },
+      {
+        "name": "teems_relay",
+        "type": "boolean",
+        "source": "user",
+        "default": false,
+        "description": "Host-side TEEMS egress relay for hosts with lossy forwarded egress."
+      },
+      {
         "name": "customer",
         "type": "string",
         "source": "user",
-        "description": "Customer name recorded in the PoC repo created by ocibnkctl init."
+        "default": "",
+        "description": "Optional label recorded in poc.yaml metadata."
       }
-    ],
-    "optional": []
+    ]
   },
   "references": []
 }
