@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "name": "ocibnkctl-tools-runner",
+  "version": "2.3.1",
+  "kind": "container_image",
+  "description": "ocibnkctl tools runner — deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. Argv-only steps; no shell.",
+  "container_image": {
+    "registry_host": "ghcr.io",
+    "repository": "mwiget/ocibnkctl-tools-runner",
+    "digest": "sha256:9dacbd3f24d32ca4c98a94c5ede1b0c4d48b1b07e020b2b8c82fe365dcd998bb"
+  },
+  "lifecycle": {
+    "supports_apply": true,
+    "supports_destroy": true
+  },
+  "state": {
+    "mount_path": "/state",
+    "home_env": {
+      "DOCKER_HOST": "tcp://docker-socket-proxy:2375"
+    }
+  },
+  "execution": {
+    "engine": "container",
+    "limits": {
+      "cpus": "2",
+      "memory": "2g"
+    }
+  },
+  "steps": {
+    "init": [
+      {
+        "name": "init-poc",
+        "args": ["ocibnkctl", "init", "poc", "--customer", "{{inputs.customer}}"],
+        "timeout_seconds": 300,
+        "run_once": true
+      }
+    ],
+    "apply": [
+      {
+        "name": "validate",
+        "args": ["ocibnkctl", "validate", "--poc", "/state/poc"],
+        "timeout_seconds": 300
+      },
+      {
+        "name": "e2e",
+        "args": [
+          "ocibnkctl",
+          "e2e",
+          "--poc",
+          "/state/poc",
+          "--yolo",
+          "--confirm-cluster",
+          "poc"
+        ],
+        "timeout_seconds": 5400,
+        "retry": { "max_attempts": 2, "backoff_seconds": 120 }
+      }
+    ],
+    "destroy": [
+      {
+        "name": "destroy",
+        "args": [
+          "ocibnkctl",
+          "destroy",
+          "--poc",
+          "/state/poc",
+          "--yolo",
+          "--confirm-cluster",
+          "poc"
+        ],
+        "timeout_seconds": 1800
+      }
+    ]
+  },
+  "inputs": {
+    "required": [
+      {
+        "name": "customer",
+        "type": "string",
+        "source": "user",
+        "description": "Customer name recorded in the PoC repo created by ocibnkctl init."
+      }
+    ],
+    "optional": []
+  },
+  "references": []
+}

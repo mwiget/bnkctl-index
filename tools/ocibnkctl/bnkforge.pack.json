@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "module": {
+    "name": "ocibnkctl",
+    "path": "tools/ocibnkctl",
+    "version": "2.3.1",
+    "category": "bnk",
+    "description": "ocibnkctl — deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). Runs inside the digest-pinned ocibnkctl-tools-runner image via the docker-socket proxy."
+  },
+  "deployment_pack": {
+    "engine": "container",
+    "runner_profile": "container-default",
+    "working_directory": ".",
+    "lifecycle": {
+      "supports_init": true,
+      "supports_plan": false,
+      "supports_apply": true,
+      "supports_destroy": true,
+      "supports_refresh": false,
+      "supports_drift": false
+    },
+    "entrypoints": {}
+  },
+  "dependencies": {
+    "required": [],
+    "optional": []
+  },
+  "inputs": {
+    "required": [
+      {
+        "name": "customer",
+        "type": "string",
+        "source": "user",
+        "description": "Customer name recorded in the PoC repo created by ocibnkctl init."
+      }
+    ],
+    "optional": []
+  },
+  "outputs": {
+    "key_outputs": []
+  }
+}

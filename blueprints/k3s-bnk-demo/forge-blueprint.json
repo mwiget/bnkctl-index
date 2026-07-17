@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "blueprint": {
+    "id": "k3s-bnk-demo",
+    "version": "1.0.0",
+    "name": "BNK demo on native k3s (ocibnkctl)",
+    "description": "Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster running as containers on the host docker/podman runtime — no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
+  },
+  "category": "bnk",
+  "tags": ["bnk", "k3s", "demo", "bnkctl"],
+  "outcomes": [
+    "A native k3s cluster (server + TMM worker) running as containers on the deployment host",
+    "F5 BIG-IP Next for Kubernetes 2.3.1 deployed in demo mode (FLO, cert-manager, CNE/TMM)",
+    "Resume-safe, idempotent pipeline — re-running apply continues where it left off"
+  ],
+  "prerequisites": [
+    {
+      "type": "entitlement",
+      "name": "F5 FAR tarball",
+      "description": "Image-pull credentials for repo.f5.com — drop into /state/poc/keys/ in the module state after init, before deploy."
+    },
+    {
+      "type": "entitlement",
+      "name": "TEEM JWT",
+      "description": "Activation token — drop into /state/poc/keys/.jwt in the module state after init, before deploy."
+    },
+    {
+      "type": "capability",
+      "name": "Docker socket proxy",
+      "description": "BNK Forge docker-socket proxy with container create/exec capabilities (ships with server installs)."
+    },
+    {
+      "type": "capability",
+      "name": "Host resources",
+      "description": "~10 CPU cores recommended on the deployment host; the pipeline auto-shrinks on tighter hosts."
+    }
+  ],
+  "modules": [
+    {
+      "id": "ocibnkctl",
+      "module": "tools/ocibnkctl",
+      "version": "2.3.1",
+      "name": "ocibnkctl tools runner",
+      "description": "Runs ocibnkctl init/validate/e2e inside the pinned tools-runner image; k3s nodes launch as sibling containers via the docker-socket proxy.",
+      "depends_on": [],
+      "inputs": {
+        "customer": "${customer}"
+      }
+    }
+  ],
+  "inputs": {
+    "required": [
+      {
+        "name": "customer",
+        "type": "string",
+        "label": "Customer name",
+        "description": "Recorded in the PoC repo created by ocibnkctl init."
+      }
+    ],
+    "optional": []
+  }
+}
