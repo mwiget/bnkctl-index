@@ -2,7 +2,7 @@
   "schema_version": 1,
   "blueprint": {
     "id": "k3s-bnk-demo",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "name": "BNK demo on native k3s (ocibnkctl)",
     "description": "Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster running as containers on the host docker/podman runtime \u2014 no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
   },
@@ -44,7 +44,7 @@
     {
       "id": "ocibnkctl",
       "module": "tools/ocibnkctl",
-      "version": "2.3.1.10",
+      "version": "2.3.1.11",
       "name": "ocibnkctl tools runner",
       "description": "Runs ocibnkctl init/validate/e2e inside the pinned tools-runner image; k3s nodes launch as sibling containers via the docker-socket proxy.",
       "depends_on": [],
