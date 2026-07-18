@@ -2,7 +2,7 @@
   "schema_version": 1,
   "blueprint": {
     "id": "k3s-bnk-demo",
-    "version": "1.9.7",
+    "version": "1.9.8",
     "name": "BNK demo on native k3s (ocibnkctl)",
     "description": "Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster running as containers on the host docker/podman runtime \u2014 no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
   },
@@ -22,12 +22,12 @@
     {
       "type": "entitlement",
       "name": "F5 FAR tarball",
-      "description": "Image-pull credentials for repo.f5.com \u2014 drop into /state/poc/keys/ in the module state after init, before deploy."
+      "description": "Image-pull credentials for repo.f5.com \u2014 add as project secret 'far_tarball' before deploy; the module's secret_files declaration materializes it into the workspace keys/ directory on every run."
     },
     {
       "type": "entitlement",
       "name": "TEEM JWT",
-      "description": "Activation token \u2014 drop into /state/poc/keys/.jwt in the module state after init, before deploy."
+      "description": "Activation token \u2014 add as project secret 'jwt_token' before deploy; materialized into the workspace keys/ directory via secret_files."
     },
     {
       "type": "capability",

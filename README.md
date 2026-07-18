@@ -37,17 +37,14 @@ Everything runs inside digest-pinned container images pulled at deploy time — 
 1. Publish a runner image for the tool (typically `FROM gcr.io/distroless/static` + `COPY <ctl> /usr/local/bin/`), multi-arch, to an allowlisted registry. Record the manifest **digest**.
 2. Copy `tools/roksbnkctl/` as a template. Set `module.path` to the new directory, pin the image digest, and describe the tool's lifecycle as `steps` (argv arrays only).
 3. Optionally add a blueprint under `blueprints/` composing the module with a guided input form.
-4. Validate against a bnk-forge checkout before opening a PR:
+4. Validate against a bnk-forge checkout before opening a PR — one command runs the
+   sync-time validators over every pack, artifact and blueprint, plus the
+   path-equality, artifact-vs-pack version and blueprint-pin coherence checks:
 
 ```bash
-cd <bnk-forge>/backend && python3 - <<'EOF'
-import json
-from services.module_metadata import ModuleMetadataValidator
-pack = json.load(open("<bnkctl-index>/tools/<name>/bnkforge.pack.json"))
-art  = json.load(open("<bnkctl-index>/tools/<name>/bnkforge.artifact.json"))
-v = ModuleMetadataValidator()
-v.validate_pack_manifest(pack)
-v.validate_artifact_manifest(art, registry_host_allowlist=["ghcr.io", "quay.io", "docker.io", "registry.k8s.io"])
-print("OK")
-EOF
+python3 <bnk-forge>/scripts/validate_catalog_content.py <bnkctl-index>
 ```
+
+CI (`.github/workflows/validate.yml`) runs the same validation on every PR
+(JSON parse + registry digest existence always; the full validator when the
+`BNK_FORGE_TOKEN` secret grants read access to the bnk-forge repo).

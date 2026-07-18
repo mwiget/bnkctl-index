@@ -1,0 +1,69 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      BNK_FORGE_TOKEN: ${{ secrets.BNK_FORGE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON well-formedness
+        run: |
+          set -e
+          find tools blueprints -name '*.json' -print0 | while IFS= read -r -d '' f; do
+            python3 -m json.tool "$f" > /dev/null || { echo "::error file=$f::invalid JSON"; exit 1; }
+          done
+          echo "all JSON manifests parse"
+
+      - name: Pinned image digests exist in their registries
+        run: |
+          set -e
+          fail=0
+          for art in tools/*/bnkforge.artifact.json; do
+            host=$(python3 -c "import json;i=json.load(open('$art'))['container_image'];print(i['registry_host'])")
+            repo=$(python3 -c "import json;i=json.load(open('$art'))['container_image'];print(i['repository'])")
+            digest=$(python3 -c "import json;i=json.load(open('$art'))['container_image'];print(i['digest'])")
+            ref="$host/$repo@$digest"
+            if docker manifest inspect "$ref" > /dev/null 2>&1; then
+              echo "OK  $art -> $ref"
+            else
+              echo "::error file=$art::pinned digest not found in registry: $ref"
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - name: Check for bnk-forge access token
+        id: token
+        run: |
+          if [ -n "$BNK_FORGE_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::BNK_FORGE_TOKEN secret not set — skipping full manifest validation (pack/artifact/blueprint schema, path equality, version coherence). Set a read-only token for sp-prod-field/bnk-forge to enable it."
+          fi
+
+      - name: Check out bnk-forge (validators)
+        if: steps.token.outputs.present == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: sp-prod-field/bnk-forge
+          ref: staging
+          token: ${{ secrets.BNK_FORGE_TOKEN }}
+          path: bnk-forge
+          sparse-checkout: |
+            scripts
+            backend/services
+            backend/schemas
+
+      - name: Full manifest validation (sync-time validators)
+        if: steps.token.outputs.present == 'true'
+        run: |
+          pip install --quiet pydantic
+          python3 bnk-forge/scripts/validate_catalog_content.py .
