@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.3.1.15",
+  "version": "2.3.1.16",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-8) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
+  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-9) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
-    "digest": "sha256:e33bb3985d5c5cb2edc343e9275a882827ae7c36a2c1d863921fb5e555b1a9e0"
+    "digest": "sha256:28394ceee400a2c93e1e90fabea28e94e19f58858a59232a9ecd211149ca0004"
   },
   "lifecycle": {
     "supports_apply": true,
@@ -182,7 +182,8 @@
           ],
           "timeout_seconds": 3600
         }
-      ]
+      ],
+      "cleanup_note": "These scenarios left objects on the cluster. Run 'Clean up all scenarios' when done."
     },
     "run-scenario": {
       "title": "Run one scenario",
@@ -226,7 +227,8 @@
           ],
           "timeout_seconds": 900
         }
-      ]
+      ],
+      "cleanup_note": "This scenario left objects on the cluster. Run 'Clean up a scenario' with the same name when done."
     },
     "run-scenario-amber": {
       "title": "Run an amber scenario",
@@ -257,7 +259,8 @@
           ],
           "timeout_seconds": 900
         }
-      ]
+      ],
+      "cleanup_note": "This scenario left objects on the cluster. Run 'Clean up a scenario' with the same name when done."
     },
     "clean-scenario": {
       "title": "Clean up a scenario",
@@ -301,6 +304,25 @@
             "/state/{{inputs.poc_name}}"
           ],
           "timeout_seconds": 600
+        }
+      ]
+    },
+    "clean-all-scenarios": {
+      "title": "Clean up all scenarios",
+      "description": "Removes the cluster objects every green scenario applied, in reverse dependency order (best-effort).",
+      "rating": "green",
+      "steps": [
+        {
+          "name": "scenario-clean-all",
+          "args": [
+            "ocibnkctl",
+            "scenario",
+            "clean",
+            "--all",
+            "--poc",
+            "/state/{{inputs.poc_name}}"
+          ],
+          "timeout_seconds": 1200
         }
       ]
     }
