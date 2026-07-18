@@ -12,8 +12,8 @@ Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose n
 
 ## Prerequisites
 
-- F5 FAR tarball in the module state at `/state/poc/keys/` (after init, before deploy)
-- TEEM JWT in the module state at `/state/poc/keys/.jwt`
+- F5 FAR tarball as project secret `far_tarball` (materialized into the workspace `keys/` dir via the module's `secret_files`)
+- TEEM JWT as project secret `jwt_token` (materialized as `keys/.jwt`)
 - BNK Forge docker-socket proxy with container create/exec capabilities
 - ~10 CPU cores on the deployment host (auto-shrink on tighter hosts)
 
