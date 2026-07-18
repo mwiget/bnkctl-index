@@ -11,7 +11,7 @@ The runner image carries `ocibnkctl` plus the tools it requires (`docker` CLI, `
 The pinned image `ghcr.io/mwiget/ocibnkctl-tools-runner` (multi-arch: linux/amd64 + linux/arm64) is built and published from the upstream **ocibnkctl** repo, not from this catalog:
 
 - **Build source:** [`runner.Dockerfile`](https://github.com/mwiget/ocibnkctl/blob/main/runner.Dockerfile) — `FROM alpine`, installs the tool set, and downloads + checksum-verifies the `ocibnkctl` binary from the matching GitHub release.
-- **Who builds it:** the ocibnkctl maintainer, as a step in the release runbook ([`docs/RELEASE.md`](https://github.com/mwiget/ocibnkctl/blob/main/docs/RELEASE.md)) via `make runner-image RUNNER_VERSION=<ver> RUNNER_PLATFORM=linux/amd64,linux/arm64 PUSH=1`. It is a manual publish step — ocibnkctl CI (goreleaser) builds only the standalone binaries, not this image.
+- **Who builds it:** ocibnkctl CI. The `runner-image` job in [`release.yml`](https://github.com/mwiget/ocibnkctl/blob/main/.github/workflows/release.yml) builds + pushes the multi-arch image on every `v*` tag (after goreleaser publishes the binaries) and prints the digest in the run summary. `make runner-image … PUSH=1` remains the manual/local fallback — see [`docs/RELEASE.md`](https://github.com/mwiget/ocibnkctl/blob/main/docs/RELEASE.md).
 
 ## Lifecycle
 
