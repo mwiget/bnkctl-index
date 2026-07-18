@@ -6,6 +6,13 @@ Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl
 
 The runner image carries `ocibnkctl` plus the tools it requires (`docker` CLI, `kubectl`, `helm`, `git`). The k3s node containers are launched as **sibling containers** on the host runtime through BNK Forge's capability-scoped docker-socket proxy (`DOCKER_HOST=tcp://docker-socket-proxy:2375`, set via `state.home_env`) — the runner never mounts the raw host socket.
 
+### Runner image provenance
+
+The pinned image `ghcr.io/mwiget/ocibnkctl-tools-runner` (multi-arch: linux/amd64 + linux/arm64) is built and published from the upstream **ocibnkctl** repo, not from this catalog:
+
+- **Build source:** [`runner.Dockerfile`](https://github.com/mwiget/ocibnkctl/blob/main/runner.Dockerfile) — `FROM alpine`, installs the tool set, and downloads + checksum-verifies the `ocibnkctl` binary from the matching GitHub release.
+- **Who builds it:** the ocibnkctl maintainer, as a step in the release runbook ([`docs/RELEASE.md`](https://github.com/mwiget/ocibnkctl/blob/main/docs/RELEASE.md)) via `make runner-image RUNNER_VERSION=<ver> RUNNER_PLATFORM=linux/amd64,linux/arm64 PUSH=1`. It is a manual publish step — ocibnkctl CI (goreleaser) builds only the standalone binaries, not this image.
+
 ## Lifecycle
 
 - `init` (run once): `ocibnkctl init <poc_name> --no-git` with the form inputs passed as `OCIBNKCTL_*` env — creates the PoC repo at `/state/<poc_name>` with the chosen shape baked into `poc.yaml`
@@ -42,4 +49,4 @@ First manifest revision — validated against the BNK Forge manifest contract; a
 
 ## Updating
 
-New ocibnkctl release → rebuild/publish `ghcr.io/mwiget/ocibnkctl-tools-runner`, update `digest` and bump `version` in **both** `bnkforge.artifact.json` and `bnkforge.pack.json` (and any blueprint pinning this module).
+New ocibnkctl release → rebuild/publish `ghcr.io/mwiget/ocibnkctl-tools-runner` (from [`runner.Dockerfile`](https://github.com/mwiget/ocibnkctl/blob/main/runner.Dockerfile) — see [ocibnkctl `docs/RELEASE.md`](https://github.com/mwiget/ocibnkctl/blob/main/docs/RELEASE.md)), update `digest` and bump `version` in **both** `bnkforge.artifact.json` and `bnkforge.pack.json` (and any blueprint pinning this module).
