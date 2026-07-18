@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.3.1.13",
+  "version": "2.3.1.14",
   "kind": "container_image",
   "description": "ocibnkctl tools runner (wraps ocibnkctl v2.3.1-8) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
@@ -163,5 +163,146 @@
       "secret_name": "jwt_token",
       "path": "{{inputs.poc_name}}/keys/.jwt"
     }
-  ]
+  ],
+  "actions": {
+    "run-all-green-scenarios": {
+      "title": "Run all green scenarios",
+      "description": "Runs every green-rated F5 BNK how-to scenario in dependency order against the deployed cluster; JSON reports land in the PoC reports directory.",
+      "rating": "green",
+      "steps": [
+        {
+          "name": "scenario-run-all",
+          "args": [
+            "ocibnkctl",
+            "scenario",
+            "run",
+            "--all",
+            "--poc",
+            "/state/{{inputs.poc_name}}"
+          ],
+          "timeout_seconds": 3600
+        }
+      ]
+    },
+    "run-scenario": {
+      "title": "Run one scenario",
+      "description": "Runs a single green-rated scenario (dependencies must already be satisfied - run bgp-peer-frr first for data-plane scenarios).",
+      "rating": "green",
+      "inputs": [
+        {
+          "name": "scenario",
+          "type": "string",
+          "source": "user",
+          "default": "bgp-peer-frr",
+          "description": "Scenario name",
+          "choices": [
+            "bgp-peer-frr",
+            "ai-semantic-cache",
+            "ai-token-counting",
+            "ai-token-counting-dssm",
+            "bgp-anycast",
+            "cluster-wide-watch",
+            "core-file-collection",
+            "cwc-admin-access",
+            "external-resource-pool",
+            "grpc-loadbalance",
+            "http-routing-e2e",
+            "proxy-protocol-l4",
+            "tcp-l4-loadbalance",
+            "udp-l4-loadbalance"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "name": "scenario-run",
+          "args": [
+            "ocibnkctl",
+            "scenario",
+            "run",
+            "{{inputs.scenario}}",
+            "--poc",
+            "/state/{{inputs.poc_name}}"
+          ],
+          "timeout_seconds": 900
+        }
+      ]
+    },
+    "run-scenario-amber": {
+      "title": "Run an amber scenario",
+      "description": "Amber-rated: only partially testable in this 2-node demo shape (fic-dynamic-ip needs resources the demo cluster may lack). Expect partial assertions.",
+      "rating": "amber",
+      "inputs": [
+        {
+          "name": "scenario",
+          "type": "string",
+          "source": "user",
+          "default": "fic-dynamic-ip",
+          "description": "Amber scenario name",
+          "choices": [
+            "fic-dynamic-ip"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "name": "scenario-run",
+          "args": [
+            "ocibnkctl",
+            "scenario",
+            "run",
+            "{{inputs.scenario}}",
+            "--poc",
+            "/state/{{inputs.poc_name}}"
+          ],
+          "timeout_seconds": 900
+        }
+      ]
+    },
+    "clean-scenario": {
+      "title": "Clean up a scenario",
+      "description": "Deletes the cluster objects a scenario applied.",
+      "rating": "green",
+      "inputs": [
+        {
+          "name": "scenario",
+          "type": "string",
+          "source": "user",
+          "default": "tcp-l4-loadbalance",
+          "description": "Scenario to clean",
+          "choices": [
+            "bgp-peer-frr",
+            "ai-semantic-cache",
+            "ai-token-counting",
+            "ai-token-counting-dssm",
+            "bgp-anycast",
+            "cluster-wide-watch",
+            "core-file-collection",
+            "cwc-admin-access",
+            "external-resource-pool",
+            "fic-dynamic-ip",
+            "grpc-loadbalance",
+            "http-routing-e2e",
+            "proxy-protocol-l4",
+            "tcp-l4-loadbalance",
+            "udp-l4-loadbalance"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "name": "scenario-clean",
+          "args": [
+            "ocibnkctl",
+            "scenario",
+            "clean",
+            "{{inputs.scenario}}",
+            "--poc",
+            "/state/{{inputs.poc_name}}"
+          ],
+          "timeout_seconds": 600
+        }
+      ]
+    }
+  }
 }
