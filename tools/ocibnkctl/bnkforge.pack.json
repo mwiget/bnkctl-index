@@ -3,9 +3,9 @@
   "module": {
     "name": "ocibnkctl",
     "path": "tools/ocibnkctl",
-    "version": "2.3.1.19",
+    "version": "2.3.1.20",
     "category": "bnk",
-    "description": "ocibnkctl (v2.3.1-11) \u2014 deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). PoC shape (runtime, TMM nodes, edge octet, host profile) is chosen at deploy time and seeded into poc.yaml.",
+    "description": "ocibnkctl (v2.3.1-13) \u2014 deploy F5 BIG-IP Next for Kubernetes 2.3.1 on a native k3s cluster running as containers on the host docker/podman runtime (demo mode, no DPU/SR-IOV). PoC shape (runtime, TMM nodes, edge octet, host profile) is chosen at deploy time and seeded into poc.yaml.",
     "provider": "docker"
   },
   "deployment_pack": {
