@@ -1,6 +1,6 @@
 # ocibnkctl — BNK on native k3s (host container runtime)
 
-Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.3.1-10**, which deploys F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
+Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.3.1-11**, which deploys F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
 
 ## How it runs under BNK Forge
 
