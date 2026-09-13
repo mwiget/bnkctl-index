@@ -14,7 +14,7 @@ A curated index of `*bnkctl`-style CLI tools packaged as [BNK Forge](https://git
 | Blueprint | Description |
 |-----------|-------------|
 | [roks-bnk-demo](blueprints/roks-bnk-demo/) | Provision a ROKS/IKS cluster and deploy BNK using roksbnkctl |
-| [k3s-bnk-demo](blueprints/k3s-bnk-demo/) | BNK 2.3.1 demo on native k3s via ocibnkctl — no cloud account needed |
+| [k3s-bnk-demo](blueprints/k3s-bnk-demo/) | BNK 2.4.0 demo on native k3s via ocibnkctl — no cloud account needed |
 
 ## Using this index in BNK Forge
 
