@@ -2,9 +2,9 @@
   "schema_version": 1,
   "blueprint": {
     "id": "k3s-bnk-demo",
-    "version": "1.9.10",
+    "version": "1.10.0",
     "name": "BNK demo on native k3s (ocibnkctl)",
-    "description": "Deploy F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster running as containers on the host docker/podman runtime \u2014 no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
+    "description": "Deploy F5 BIG-IP Next for Kubernetes 2.4.0 in demo mode on a k3s cluster running as containers on the host docker/podman runtime \u2014 no cloud account, no DPU. Runs entirely through the ocibnkctl tools-runner image and the BNK Forge docker-socket proxy."
   },
   "category": "bnk",
   "tags": [
@@ -15,7 +15,7 @@
   ],
   "outcomes": [
     "A native k3s cluster (server + TMM worker) running as containers on the deployment host",
-    "F5 BIG-IP Next for Kubernetes 2.3.1 deployed in demo mode (FLO, cert-manager, CNE/TMM)",
+    "F5 BIG-IP Next for Kubernetes 2.4.0 deployed in demo mode (FLO, cert-manager, CNE/TMM)",
     "Resume-safe, idempotent pipeline \u2014 re-running apply continues where it left off"
   ],
   "prerequisites": [
@@ -37,14 +37,14 @@
     {
       "type": "capability",
       "name": "Host resources",
-      "description": "~10 CPU cores recommended on the deployment host; the pipeline auto-shrinks on tighter hosts."
+      "description": "~10 CPU cores and 24 GB of container-runtime memory (on Docker Desktop: the VM allocation) for the full footprint; below either, the pipeline auto-runs deploy shrink, which still needs ~15 GB for one TMM node with all scenarios."
     }
   ],
   "modules": [
     {
       "id": "ocibnkctl",
       "module": "tools/ocibnkctl",
-      "version": "2.3.1.20",
+      "version": "2.4.0.1",
       "name": "ocibnkctl tools runner",
       "description": "Runs ocibnkctl init/validate/e2e inside the pinned tools-runner image; k3s nodes launch as sibling containers via the docker-socket proxy.",
       "depends_on": [],

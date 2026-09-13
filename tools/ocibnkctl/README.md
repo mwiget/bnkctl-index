@@ -1,6 +1,6 @@
 # ocibnkctl — BNK on native k3s (host container runtime)
 
-Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.3.1-13**, which deploys F5 BIG-IP Next for Kubernetes 2.3.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
+Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.4.0-1**, which deploys F5 BIG-IP Next for Kubernetes 2.4.0 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
 
 ## How it runs under BNK Forge
 
@@ -40,12 +40,14 @@ v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
    - project secret `far_tarball` → materialized at `<poc_name>/keys/f5-far-auth-key.tgz` (image-pull credentials for `repo.f5.com`)
    - project secret `jwt_token` → materialized at `<poc_name>/keys/.jwt` (TEEM activation token)
    Manually dropping the files into the module's state volume after `init` still works, but the project-secrets path survives volume recreation and is what the blueprint prerequisites describe.
-2. **Host resource floor**: ~10 cores for the full stack (`e2e` auto-runs `deploy shrink` on tighter hosts; a 4-core `host_profile: small` exists — see the upstream README).
+2. **Host resource floor**: ~10 cores and 24 GB of container-runtime memory for the full stack. `e2e` auto-runs `deploy shrink` when either is short (memory is read from `docker info`, i.e. the VM allocation on Docker Desktop; if the socket proxy denies that call, cores alone decide). With shrink, one TMM node plus all scenarios needs ~15 GB. A 4-core `host_profile: small` exists — see the upstream README.
 3. **The WIDE docker socket proxy** (`docker-socket-proxy-infra`, guide §14.6): ocibnkctl builds a k3s cluster out of containers, so it needs the Docker networks/volumes/exec APIs the default narrow proxy denies. Enable it on the BNK Forge host with `COMPOSE_PROFILES=docker-infra make deploy`. Without it, `cluster up` fails at the first `docker network create` with a 403 from the proxy.
 
 ## Status
 
 Exercised end-to-end from BNK Forge deployments through the 2.3.1.x series: full `apply` (cluster up → FLO → CNE), destroy, resume, cluster auto-registration, scenario actions, and the reports viewer. Fixes discovered along the way land as new runner + module versions (see the version history in this repo's log).
+
+**2.4.0.1** (BNK 2.4.0, ocibnkctl v2.4.0-1) is validated with ocibnkctl's own `e2e` plus all 15 scenarios (all green, including `fic-dynamic-ip`) on a native k3s cluster, but not yet through a BNK Forge deployment.
 
 ## Updating
 
