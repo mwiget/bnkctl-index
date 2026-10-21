@@ -1,6 +1,6 @@
 # ocibnkctl — BNK on native k3s (host container runtime)
 
-Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.4.0-1**, which deploys F5 BIG-IP Next for Kubernetes 2.4.0 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
+Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.4.1-4**, which deploys F5 BIG-IP Next for Kubernetes 2.4.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
 
 ## How it runs under BNK Forge
 
@@ -30,9 +30,26 @@ The pinned image `ghcr.io/mwiget/ocibnkctl-tools-runner` (multi-arch: linux/amd6
 | `host_profile` | standard \| small | *(unset = auto)* | Auto-detect picks `small` below the 10-core floor (sheds TMM's metrics sidecar) |
 | `teems_relay` | boolean | `false` | Host-side TEEMS egress relay for hosts with lossy forwarded egress |
 | `customer` | string | — | Optional label recorded in poc.yaml metadata (cosmetic) |
+| `profile` | blank \| `llm-gateway` | *(blank)* | `llm-gateway` seeds the BNK 2.4.1 AI/LLM gateway demo: `bnk.ai_gateway` with metrics, so the console, virtual keys, ClickHouse metering and the AI gateway API are deployed. See [LLM gateway](#llm-gateway-profile) |
 
 Inputs are seeded into `poc.yaml` via `OCIBNKCTL_*` env at `init` (ocibnkctl
 v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
+
+## LLM gateway profile
+
+With `profile: llm-gateway`, `apply` deploys BNK with the AI/LLM gateway
+enabled. The demo content (a mock OpenAI-compatible LLM, tenant `demo`, model
+`gpt-4o-mini`, principal `demo-app`, route `demo-llm` on `203.0.113.140`, a
+virtual key) comes from the `llm-gateway` scenario. Run it from the module's
+**Run a scenario** action after `apply`, after `bgp-peer-frr`, as with the
+other data-plane scenarios. It asserts 200 / 401 / 401 / 403 through TMM and
+the ClickHouse records.
+
+The console, the tenant and platform admin passwords and `ask.sh` are
+described in ocibnkctl's
+[LLM gateway how-to](https://github.com/mwiget/ocibnkctl/blob/main/docs/llm-gateway-howto.md).
+Under Forge, the console's port-forward runs against the cluster's kubeconfig
+on the deployment host.
 
 ## Prerequisites — read before deploying
 
@@ -47,7 +64,9 @@ v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
 
 Exercised end-to-end from BNK Forge deployments through the 2.3.1.x series: full `apply` (cluster up → FLO → CNE), destroy, resume, cluster auto-registration, scenario actions, and the reports viewer. Fixes discovered along the way land as new runner + module versions (see the version history in this repo's log).
 
-**2.4.0.1** (BNK 2.4.0, ocibnkctl v2.4.0-1) is validated with ocibnkctl's own `e2e` plus all 15 scenarios (all green, including `fic-dynamic-ip`) on a native k3s cluster, but not yet through a BNK Forge deployment.
+**2.4.1.1** (BNK 2.4.1, ocibnkctl v2.4.1-4) is validated with ocibnkctl's own `e2e`: on a MacBook (Docker Desktop, 18 GB, behind Netskope) with the `llm-gateway` profile, `bgp-peer-frr` and `llm-gateway` green; and on a Linux lab host. Not yet run through a BNK Forge deployment. ocibnkctl v2.4.1-4 adds `cluster.extra_ca_certs` (TLS-inspecting proxies) and the test-JWT JWKS fix, neither exposed as a Forge input yet.
+
+**2.4.0.1** (BNK 2.4.0, ocibnkctl v2.4.0-1) was validated with all 15 scenarios on a native k3s cluster.
 
 ## Updating
 
