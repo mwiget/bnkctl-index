@@ -1,6 +1,6 @@
 # ocibnkctl — BNK on native k3s (host container runtime)
 
-Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.4.1-5**, which deploys F5 BIG-IP Next for Kubernetes 2.4.1 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
+Container-runner module wrapping [ocibnkctl](https://github.com/mwiget/ocibnkctl) **v2.4.2**, which deploys F5 BIG-IP Next for Kubernetes 2.4.2 in demo mode on a k3s cluster whose nodes run **as containers on the host docker/podman runtime** — no kind/k3d, no cloud account. Aimed at low-spec hosts where a bare-metal or DPU pipeline is overkill.
 
 ## How it runs under BNK Forge
 
@@ -47,7 +47,7 @@ v2.3.1-1+); `poc.yaml` remains the source of truth afterwards.
 
 Exercised end-to-end from BNK Forge deployments through the 2.3.1.x series: full `apply` (cluster up → FLO → CNE), destroy, resume, cluster auto-registration, scenario actions, and the reports viewer. Fixes discovered along the way land as new runner + module versions (see the version history in this repo's log).
 
-**2.4.1.5** (BNK 2.4.1, ocibnkctl v2.4.1-5) is validated with ocibnkctl's own `e2e` plus `scenario run --all` on fresh anycast-bgp and selfip-dag k3s clusters (17 green scenarios, now including `ai-inference-epp` and `llm-gateway`), but not yet through a BNK Forge deployment. The deploy phases now run the plain-file kit scripts (`bnk-kit_2.4.1-5.tar.gz` on the release); the runner image adds `curl` for them.
+**2.4.2.0** (BNK 2.4.2, ocibnkctl v2.4.2) is validated with ocibnkctl's own `e2e` plus `scenario run --all` on a fresh anycast-bgp k3s cluster (16 passed, 1 skipped: `llm-gateway`, which needs the AI gateway), but not yet through a BNK Forge deployment. Earlier: 2.4.1.5 (BNK 2.4.1, v2.4.1-5) moved the deploy phases onto the plain-file kit scripts.
 
 ## Updating
 

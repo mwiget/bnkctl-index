@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.4.1.5",
+  "version": "2.4.2.0",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.4.1-5) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.4.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
+  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.4.2) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.4.2 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
-    "digest": "sha256:3779a875fc914b3535a51eaf986349c3252b0a1c71b6a81ad491efd4780cf44a"
+    "digest": "sha256:f4642d799dd9b1850c77da6856b7394c5fb9b905f53c8683a00e1e5748be1108"
   },
   "lifecycle": {
     "supports_apply": true,
