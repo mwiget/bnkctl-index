@@ -2,12 +2,12 @@
 
 ## Solution Description
 
-Deploy F5 BIG-IP Next for Kubernetes 2.4.0 in demo mode on a k3s cluster whose nodes run as containers on the deployment host's docker/podman runtime. No cloud account, no DPU, no SR-IOV — aimed at laptops and small lab hosts.
+Deploy F5 BIG-IP Next for Kubernetes 2.4.1 in demo mode on a k3s cluster whose nodes run as containers on the deployment host's docker/podman runtime. No cloud account, no DPU, no SR-IOV — aimed at laptops and small lab hosts.
 
 ## What you get
 
 - A native k3s cluster (server + TMM worker) running as containers on the deployment host
-- F5 BIG-IP Next for Kubernetes 2.4.0 deployed in demo mode (FLO, cert-manager, CNE/TMM)
+- F5 BIG-IP Next for Kubernetes 2.4.1 deployed in demo mode (FLO, cert-manager, CNE/TMM)
 - Resume-safe, idempotent pipeline — re-running apply continues where it left off
 
 ## Prerequisites

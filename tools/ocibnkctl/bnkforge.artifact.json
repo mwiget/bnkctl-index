@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "name": "ocibnkctl-tools-runner",
-  "version": "2.4.0.1",
+  "version": "2.4.1.5",
   "kind": "container_image",
-  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.4.0-1) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.4.0 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
+  "description": "ocibnkctl tools runner (wraps ocibnkctl v2.4.1-5) \u2014 deploys F5 BIG-IP Next for Kubernetes 2.4.1 on a native k3s cluster whose nodes run as sibling containers on the host OCI runtime, reached through the BNK Forge docker-socket proxy. PoC shape is seeded from OCIBNKCTL_* env at init; argv-only steps, no shell.",
   "container_image": {
     "registry_host": "ghcr.io",
     "repository": "mwiget/ocibnkctl-tools-runner",
-    "digest": "sha256:bb25d76d83710887482a55e090655d01850daa3b96e19b7f182ba491c9b6d858"
+    "digest": "sha256:3779a875fc914b3535a51eaf986349c3252b0a1c71b6a81ad491efd4780cf44a"
   },
   "lifecycle": {
     "supports_apply": true,
@@ -198,6 +198,7 @@
           "description": "Scenario name",
           "choices": [
             "bgp-peer-frr",
+            "ai-inference-epp",
             "ai-semantic-cache",
             "ai-token-counting",
             "ai-token-counting-dssm",
@@ -209,6 +210,7 @@
             "fic-dynamic-ip",
             "grpc-loadbalance",
             "http-routing-e2e",
+            "llm-gateway",
             "proxy-protocol-l4",
             "tcp-l4-loadbalance",
             "udp-l4-loadbalance"
@@ -244,6 +246,7 @@
           "description": "Scenario to clean",
           "choices": [
             "bgp-peer-frr",
+            "ai-inference-epp",
             "ai-semantic-cache",
             "ai-token-counting",
             "ai-token-counting-dssm",
@@ -255,6 +258,7 @@
             "fic-dynamic-ip",
             "grpc-loadbalance",
             "http-routing-e2e",
+            "llm-gateway",
             "proxy-protocol-l4",
             "tcp-l4-loadbalance",
             "udp-l4-loadbalance"
